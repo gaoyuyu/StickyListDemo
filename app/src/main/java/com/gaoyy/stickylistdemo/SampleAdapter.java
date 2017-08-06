@@ -94,7 +94,6 @@ public class SampleAdapter extends BaseAdapter implements StickyListHeadersAdapt
 
         if(data.get(position).getCount() == 0)
         {
-
             itemViewHolder.miuns.setAlpha(0f);
             itemViewHolder.count.setAlpha(0f);
             itemViewHolder.miuns.setTag(true);

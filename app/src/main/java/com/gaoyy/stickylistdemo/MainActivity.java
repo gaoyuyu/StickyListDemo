@@ -148,92 +148,92 @@ public class MainActivity extends AppCompatActivity
                         break;
                 }
             }
+        });
+    }
 
-            /**
-             * 添加时动画效果
-             * @param add
-             */
-            private void createAnim(ImageView add)
+    /**
+     * 添加时动画效果
+     *
+     * @param add
+     */
+    private void createAnim(ImageView add)
+    {
+        //获取+号的坐标
+        int[] addPoint = new int[2];
+        add.getLocationInWindow(addPoint);
+
+        //获取购物车的坐标
+        int[] cartPoint = new int[2];
+        cart.getLocationInWindow(cartPoint);
+
+        //获父布局的坐标
+        int[] parentPoint = new int[2];
+        activityMain.getLocationInWindow(parentPoint);
+
+        final ImageView newAdd = new ImageView(MainActivity.this);
+        newAdd.setLayoutParams(new RelativeLayout.LayoutParams(dip2px(MainActivity.this, 25), dip2px(MainActivity.this, 25)));
+        newAdd.setImageResource(R.mipmap.button_add);
+        newAdd.setX(addPoint[0]);
+        newAdd.setY(addPoint[1] - parentPoint[1]);
+        activityMain.addView(newAdd);
+
+        //X轴平移动画
+        ValueAnimator x = ValueAnimator.ofInt((int) newAdd.getX(), cartPoint[0]);
+        x.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator)
             {
-                //获取+号的坐标
-                int[] addPoint = new int[2];
-                add.getLocationInWindow(addPoint);
+                int value = (int) valueAnimator.getAnimatedValue();
+                newAdd.setTranslationX(value);
+            }
+        });
+        //设置线性插值器
+        x.setInterpolator(new LinearInterpolator());
 
-                //获取购物车的坐标
-                int[] cartPoint = new int[2];
-                cart.getLocationInWindow(cartPoint);
-
-                //获父布局的坐标
-                int[] parentPoint = new int[2];
-                activityMain.getLocationInWindow(parentPoint);
-
-                final ImageView newAdd = new ImageView(MainActivity.this);
-                newAdd.setLayoutParams(new RelativeLayout.LayoutParams(dip2px(MainActivity.this, 25), dip2px(MainActivity.this, 25)));
-                newAdd.setImageResource(R.mipmap.button_add);
-                newAdd.setX(addPoint[0]);
-                newAdd.setY(addPoint[1] - parentPoint[1]);
-                activityMain.addView(newAdd);
-
-                //X轴平移动画
-                ValueAnimator x = ValueAnimator.ofInt((int) newAdd.getX(), cartPoint[0]);
-                x.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-                {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator)
-                    {
-                        int value = (int) valueAnimator.getAnimatedValue();
-                        newAdd.setTranslationX(value);
-                    }
-                });
-                //设置线性插值器
-                x.setInterpolator(new LinearInterpolator());
-
-                //Y轴平移动画
-                ValueAnimator y = ValueAnimator.ofInt((int) newAdd.getY(), cartPoint[1] - parentPoint[1]);
-                y.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-                {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator valueAnimator)
-                    {
-                        int value = (int) valueAnimator.getAnimatedValue();
-                        newAdd.setTranslationY(value);
-                    }
-                });
-                //设置加速插值器
-                y.setInterpolator(new AccelerateInterpolator());
+        //Y轴平移动画
+        ValueAnimator y = ValueAnimator.ofInt((int) newAdd.getY(), cartPoint[1] - parentPoint[1]);
+        y.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator)
+            {
+                int value = (int) valueAnimator.getAnimatedValue();
+                newAdd.setTranslationY(value);
+            }
+        });
+        //设置加速插值器
+        y.setInterpolator(new AccelerateInterpolator());
 
 
-                //新增ImageView加号的渐隐动画
-                ObjectAnimator newAddAlpha = ObjectAnimator.ofFloat(newAdd, "Alpha", 1.0f, 0.0f);
-                newAddAlpha.addListener(new AnimatorListenerAdapter()
-                {
-                    @Override
-                    public void onAnimationEnd(Animator animation)
-                    {
-                        super.onAnimationEnd(animation);
-                        //动画结束移除view
-                        activityMain.removeView(newAdd);
-                    }
-                });
-
-                //动画集合
-                AnimatorSet set = new AnimatorSet();
-                set.playTogether(x, y, newAddAlpha);
-                set.start();
-
-                set.addListener(new AnimatorListenerAdapter()
-                {
-                    @Override
-                    public void onAnimationEnd(Animator animation)
-                    {
-                        super.onAnimationEnd(animation);
-                        //购物车的放大动画
-                        cartAnim();
-                    }
-                });
+        //新增ImageView加号的渐隐动画
+        ObjectAnimator newAddAlpha = ObjectAnimator.ofFloat(newAdd, "Alpha", 1.0f, 0.0f);
+        newAddAlpha.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+                super.onAnimationEnd(animation);
+                //动画结束移除view
+                activityMain.removeView(newAdd);
             }
         });
 
+        //动画集合
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(x, y, newAddAlpha);
+        set.start();
+
+        set.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationEnd(Animator animation)
+            {
+                super.onAnimationEnd(animation);
+                //购物车的放大动画
+                cartAnim();
+            }
+        });
     }
 
     /**
@@ -269,6 +269,11 @@ public class MainActivity extends AppCompatActivity
                 TypedValue.COMPLEX_UNIT_DIP, dipValue, r.getDisplayMetrics());
     }
 
+    /**
+     * 减号平移动画
+     *
+     * @param minus
+     */
     public void minusAnim(final View minus)
     {
         ObjectAnimator translationXAnim = ObjectAnimator.ofFloat(minus, "TranslationX", 100, 0);
@@ -285,7 +290,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
         set.start();
-
     }
 
     private void updateTypeList(int position)
